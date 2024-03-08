@@ -1,0 +1,18 @@
+//- extends layout
+//- block content
+//-     h1 Heading here...
+//-     p first paragraph xxx
+
+//- extends layout
+//- block content
+//-     h1 #{heading}
+//-     p #{title}
+
+
+extends layout
+block content
+    h1 #{heading}
+    p first paragraph xxx
+    p now lets loop 
+    each item in data  
+        p #{item}
