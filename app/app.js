@@ -36,7 +36,8 @@ app.get("/", function(req, res) {
     // Set up an array of data
     var test_data = ['one', 'two', 'three', 'four'];
     // Send the array through to the template as a variable called data
-    res.render("index", {'title':'My index page', 'heading':'My heading', 'data':test_data});
+    res.render("index", 
+                {'title':'My index page', 'heading':'My heading', 'data':test_data});
 });
 
 
@@ -108,15 +109,16 @@ app.get("/single-student/:id", function(req, res) {
     });
 })
 
-// // Task 2 display a formatted list of students
-// app.get("/all-students-formatted", function(req, res) {
-//     var sql = 'select * from Students';
-//     db.query(sql).then(results => {
-//     	    // Send the results rows to the all-students template
-//     	    // The rows will be in a variable called data
-//         res.render('all-students', {data: results});
-//     });
-// });
+
+// Task 2 display a formatted list of students
+app.get("/all-students-formatted", function(req, res) {
+    var sql = 'select * from Students';
+    db.query(sql).then(results => {
+    	    // Send the results rows to the all-students template
+    	    // The rows will be in a variable called data
+        res.render('all-students', {data: results});
+    });
+});
 
 
 
