@@ -2,6 +2,7 @@ extends layout
 block content
     h1 Student page for: #{student.name}
     p The ID for the student is: #{student.id}
+    p Note for this student: #{student.note}
     h2 Programme: #{student.programme.pName} 
     h2 Modules 
     table(border=1)
@@ -10,9 +11,25 @@ block content
                 td #{module.code}
                 td 
                     a(href='/single-module/' + module.code) #{module.mName}
-    //- h2 Add a note about this student
-    //- form(action='/add-note', method='POST')
-    //-     input(type='hidden' name='id' value=student.id)
-    //-     textarea(name='note' rows=6 cols=50)
-    //-     div 
-    //-     input(type='submit' value='Submit')
+    h2 Add a note about this student
+    form(action='/add-note', method='POST')
+        input(type='hidden' name='id' value=student.id)
+        textarea(name='note' rows=6 cols=50)
+        div 
+        input(type='submit' value='Submit')
+
+//-         // Task 3 single student page
+//- app.get("/single-student/:id", function (req, res){
+//-     var stId = req.params.id;
+//-     //Create a student class with the ID Passed
+//-     var student = new Student(stId);
+//-     student.getStudentDetails().then(
+//-         Promise => {
+//-             student.getStudentProgramme().then(Promise => {
+//-                 student.getStudentProgramme().then(Promise => {
+//-                     res.render('student', { student: student});
+//-                 });
+            
+//-             });
+//-         });
+//- });

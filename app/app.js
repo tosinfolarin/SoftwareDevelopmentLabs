@@ -13,6 +13,7 @@ app.set('views', './app/views');
 
 // Get the functions in the db.js file to use
 const db = require('./services/db');
+app.use(express.urlencoded({ extended: true }));
 
 // Get the student model
 const { Student } = require("./models/student");
@@ -51,14 +52,28 @@ app.get("/student-single/:id", async function (req, res) {
     var stId = req.params.id;
     // Create a student class with the ID passed
     var student = new Student(stId);
-    await student.getStudentName();
+    await student.getStudentDetails();
     await student.getStudentProgramme();
     await student.getStudentModules();
     console.log(student);
     res.render('student', {student:student});
 });
 
+app.post('/add-note', async function (req, res) {
+    params = req.body;
+    // Adding a try/catch block which will be useful later when we add to the database
+    var student = new Student(params.id);
+    try {
+         await student.addStudentNote(params.note);
+         res.redirect('/student-single/' + params.id);
+        }
+     catch (err) {
+         console.error(`Error while adding note `, err.message);
+     }
+     // Just a little output for now
+     res.send('form submitted');
 
+});
 
 // JSON output of all programmes
 app.get("/all-programmes", function(req, res) {
