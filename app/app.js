@@ -18,10 +18,14 @@ app.use(express.urlencoded({ extended: true }));
 // Get the student model
 const { Student } = require("./models/student");
 
+
+
 // Create a route for root - /
 app.get("/", function(req, res) {
     res.render("index");
 });
+
+
 
 
 // Task 1 JSON formatted listing of students
@@ -133,6 +137,37 @@ app.get("/hello/:name", function(req, res) {
     console.log(req.params);
     //  Retrieve the 'name' parameter and use it in a dynamically generated page
     res.send("Hello " + req.params.name);
+});
+
+
+
+
+
+app.post('/add-note', async function (req, res) {
+    params = req.body;
+    // Adding a try/catch block which will be useful later when we add to the database
+    var student = new Student(params.id);
+    try {
+         await student.addStudentNote(params.note);
+         res.send('form submitted');
+        }
+     catch (err) {
+         console.error(`Error while adding note `, err.message);
+     }
+     // Just a little output for now
+     res.send('form submitted');
+
+});
+
+
+// Register
+app.get('/register', function (req, res) {
+    res.render('register');
+});
+
+// Login
+app.get('/login', function (req, res) {
+    res.render('login');
 });
 
 // Start server on port 3000
