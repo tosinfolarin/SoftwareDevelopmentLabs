@@ -18,6 +18,10 @@ app.use(express.urlencoded({ extended: true }));
 // Get the student model
 const { Student } = require("./models/student");
 
+const programmes = require("./models/programmes");
+
+
+
 
 
 // Create a route for root - /
@@ -52,6 +56,18 @@ app.get("/all-students-formatted", function(req, res) {
 });
 
 // Single student page.  Show the students name, course and modules
+// app.get("/student-single/:id", async function (req, res) {
+//     var stId = req.params.id;
+//     // Create a student class with the ID passed
+//     var student = new Student(stId);
+//     await student.getStudentDetails();
+//     await student.getStudentProgramme();
+//     await student.getStudentModules();
+//     console.log(student);
+//     // res.render('student', {student:student});
+//     res.render('student', {'student':student, 'programmes':resultProgs});
+// });
+
 app.get("/student-single/:id", async function (req, res) {
     var stId = req.params.id;
     // Create a student class with the ID passed
@@ -59,8 +75,9 @@ app.get("/student-single/:id", async function (req, res) {
     await student.getStudentDetails();
     await student.getStudentProgramme();
     await student.getStudentModules();
+    resultProgs = await programmes.getAllProgrammes();
     console.log(student);
-    res.render('student', {student:student});
+    res.render('student', {'student':student, 'programmes':resultProgs});
 });
 
 app.post('/add-note', async function (req, res) {
@@ -78,6 +95,7 @@ app.post('/add-note', async function (req, res) {
      res.send('form submitted');
 
 });
+
 
 // JSON output of all programmes
 app.get("/all-programmes", function(req, res) {
@@ -107,6 +125,32 @@ app.get("/programme-single/:id", async function (req, res) {
     // through the template
     res.send(JSON.stringify(results) + JSON.stringify(modResults));  
 });
+
+
+
+
+
+// A post route to recieve new data for a students' programme
+app.post('/allocate-programme', function (req, res) {
+    params = req.body;
+    var student = new Student(params.id)
+    // Adding a try/catch block which will be useful later when we add to the database
+    try {
+        student.updateStudentProgramme(params.programme).then(result => {
+            res.redirect('/student-single/' + params.id);
+        })
+     } catch (err) {
+         console.error(`Error while adding programme `, err.message);
+     }
+});
+
+
+
+
+
+
+
+
 
 
 // Create a route for testing the db
@@ -143,22 +187,6 @@ app.get("/hello/:name", function(req, res) {
 
 
 
-app.post('/add-note', async function (req, res) {
-    params = req.body;
-    // Adding a try/catch block which will be useful later when we add to the database
-    var student = new Student(params.id);
-    try {
-         await student.addStudentNote(params.note);
-         res.send('form submitted');
-        }
-     catch (err) {
-         console.error(`Error while adding note `, err.message);
-     }
-     // Just a little output for now
-     res.send('form submitted');
-
-});
-
 
 // Register
 app.get('/register', function (req, res) {
@@ -178,35 +206,6 @@ app.listen(3000,function(){
 
 
 
-
-
-
-
-
-// // Import express.js
-// const express = require("express");
-
-// // Create express app
-// var app = express();
-
-// // Use the Pug templating engine
-// app.set('view engine', 'pug');
-// app.set('views', './app/views');
-
-
-// // Add static files location
-// app.use(express.static("static"));
-
-// // Get the functions in the db.js file to use
-// const db = require('./services/db');
-
-// // Get the student model
-// const {Student} = require("./models/student");
-
-// // Add the following near the top of your app.js file 
-// // (after the app variable is created), this enables express 
-// // to read the body of the POST parameter sent by the form
-// app.use(express.urlencoded({ extended: true }));
 
 // // Create a route for root - /
 // app.get("/", function(req, res) {

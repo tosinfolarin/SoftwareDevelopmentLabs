@@ -18,3 +18,14 @@ block content
         div 
         input(type='submit' value='Submit')
 
+
+    form(action='/allocate-programme', method='POST')
+    input(type='hidden' name='id' value=student.id)
+    select(name='programme')
+        for programme in programmes
+            if programme.id == student.programme.id
+                option(value=programme.id, selected='selected') #{programme.name}
+            else
+                option(value=programme.id) #{programme.name}
+    div
+        input(type='submit' value='Submit')
