@@ -18,17 +18,33 @@ app.use(express.urlencoded({ extended: true }));
 // Get the student models
 const { Student } = require("./models/student");
 const programmes = require("./models/programmes");
-
 const { User } = require("./models/user");
 
 
+// Set the sessions
+var session = require('express-session');
+app.use(session({
+  secret: 'secretkeysdfjsflyoifasd',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
 
 
-// Create a route for root - /
+// // Create a route for root - /
+// app.get("/", function(req, res) {
+//     res.render("index");
+// });
+
 app.get("/", function(req, res) {
-    res.render("index");
+    console.log(req.session);
+    if (req.session.uId) {
+        res.send('Welcome back, ' + req.session.uId + '!');
+    } else {
+        res.send('Please login to view this page!');
+    }
+    res.end();
 });
-
 
 
 
@@ -244,6 +260,9 @@ app.post('/authenticate', async function (req, res) {
         if (uId) {
             match = await user.authenticate(params.password);
             if (match) {
+                req.session.uId = uId;
+                req.session.loggedIn = true;
+                console.log(req.session.id);
                 res.redirect('/student-single/' + uId);
             }
             else {
