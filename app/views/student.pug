@@ -19,13 +19,35 @@ block content
         input(type='submit' value='Submit')
 
 
+  
+ 
+  
+  
+    //- form(action='/allocate-programme', method='POST')
+    //- input(type='hidden', name='id', value=student.id)
+    //- select(name='programme')
+    //-     each programme in programmes
+    //-         option(value=programme.id)= programme.name
+    //- div
+    //-     input(type='submit', value='Submit')
+
+    
     form(action='/allocate-programme', method='POST')
-    input(type='hidden' name='id' value=student.id)
-    select(name='programme')
-        for programme in programmes
-            if programme.id == student.programme.id
-                option(value=programme.id, selected='selected') #{programme.name}
-            else
-                option(value=programme.id) #{programme.name}
-    div
-        input(type='submit' value='Submit')
+        input(type='hidden', name='id', value=student.id)
+        select(name='programme')
+            for programme in programmes
+                if student.programme == programme.id
+                    option(value=programme.id, selected='selected') #{programme.name}
+                else
+                    option(value=programme.id) #{programme.name}
+        div
+            input(type='submit', value='Submit')
+
+
+    //- form(action='/allocate-programme', method='POST')
+    //-         select(name='programme')
+    //-             option(value=1) One
+    //-             option(value=2) Two
+    //-             option(value=3) Three
+    //-         <div>
+    //-         input(type='submit' value='Submit')

@@ -15,11 +15,11 @@ app.set('views', './app/views');
 const db = require('./services/db');
 app.use(express.urlencoded({ extended: true }));
 
-// Get the student model
+// Get the student models
 const { Student } = require("./models/student");
-
 const programmes = require("./models/programmes");
 
+const { User } = require("./models/user");
 
 
 
@@ -56,17 +56,6 @@ app.get("/all-students-formatted", function(req, res) {
 });
 
 // Single student page.  Show the students name, course and modules
-// app.get("/student-single/:id", async function (req, res) {
-//     var stId = req.params.id;
-//     // Create a student class with the ID passed
-//     var student = new Student(stId);
-//     await student.getStudentDetails();
-//     await student.getStudentProgramme();
-//     await student.getStudentModules();
-//     console.log(student);
-//     // res.render('student', {student:student});
-//     res.render('student', {'student':student, 'programmes':resultProgs});
-// });
 
 app.get("/student-single/:id", async function (req, res) {
     var stId = req.params.id;
@@ -130,14 +119,30 @@ app.get("/programme-single/:id", async function (req, res) {
 
 
 
-// A post route to recieve new data for a students' programme
+// // A post route to recieve new data for a students' programme
+// app.post('/allocate-programme', function (req, res) {
+//     params = req.body;
+//     var student = new Student(params.id)
+//     // Adding a try/catch block which will be useful later when we add to the database
+//     try {
+//         student.updateStudentProgramme(params.programme).then(result => {
+//             res.redirect('/student-single/' + params.id);
+//         })
+//      } catch (err) {
+//          console.error(`Error while adding programme `, err.message);
+//      }
+// });
+
+
+
+
 app.post('/allocate-programme', function (req, res) {
     params = req.body;
     var student = new Student(params.id)
     // Adding a try/catch block which will be useful later when we add to the database
     try {
         student.updateStudentProgramme(params.programme).then(result => {
-            res.redirect('/student-single/' + params.id);
+            res.redirect('/single-student/' + params.id);
         })
      } catch (err) {
          console.error(`Error while adding programme `, err.message);
@@ -193,10 +198,75 @@ app.get('/register', function (req, res) {
     res.render('register');
 });
 
+
+// If the email is matches an email in the database
+// a new password is set, if not then a new user is added
+
+app.post('/set-password', async function (req, res) {
+    params = req.body;
+    var user = new User(params.email);
+    try {
+        uId = await user.getIdFromEmail();
+        if (uId) {
+            // If a valid, existing user is found, set the password and redirect to the users single-student page
+            await user.setUserPassword(params.password);
+            // console.log(req.session.id);
+            // res.send('Password set successfully');
+            res.redirect('/student-single/' + uId);
+        }
+        else {
+            // If no existing user is found, add a new one
+            newId = await user.addUser(params.email);
+            res.send('Perhaps a page where a new user sets a programme would be good here');
+        }
+    } catch (err) {
+        console.error(`Error while adding password `, err.message);
+    }
+});
+
+
+
+
+
+
+
 // Login
 app.get('/login', function (req, res) {
     res.render('login');
 });
+
+// Check submitted email and password pair
+app.post('/authenticate', async function (req, res) {
+    params = req.body;
+    var user = new User(params.email);
+    try {
+        uId = await user.getIdFromEmail();
+        if (uId) {
+            match = await user.authenticate(params.password);
+            if (match) {
+                res.redirect('/student-single/' + uId);
+            }
+            else {
+                // TODO improve the user journey here
+                res.send('invalid password');
+            }
+        }
+        else {
+            res.send('invalid email');
+        }
+    } catch (err) {
+        console.error(`Error while comparing `, err.message);
+    }
+});
+
+
+
+
+
+
+
+
+
 
 // Start server on port 3000
 app.listen(3000,function(){
